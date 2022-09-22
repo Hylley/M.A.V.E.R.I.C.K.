@@ -5,7 +5,7 @@ bot = AI('MAVERICK', '~$')
 while True:
     text = input('>')
 
-    if text == '~$quit':
+    if text == '~$q':
         bot.close_session()
         break
 

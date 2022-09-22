@@ -1,3 +1,4 @@
+from random import choice
 from .utils import *
 import sqlite3
 
@@ -11,9 +12,23 @@ class AI():
 
         self.open_session()
     
+    def open_session(self):
+        if self.connection:
+            return
+
+        self.connection = sqlite3.connect('AI\database.db')
+        self.cursor = self.connection.cursor()
+    
+    def close_session(self):
+        self.cursor.close()
+        self.connection.close()
+
+        self.cursor = None
+        self.connection = None
+    
     def talk(self, input):
-        if self.special_char in input:
-            return False
+        if self.special_char in input: return False
+        if not self.connection: self.open_session()
 
         match = {
             'id': 1,
@@ -29,21 +44,10 @@ class AI():
                 match['text'] = row[1]
                 match['similarity'] = aprox
         
-        response_id = self.cursor.execute('SELECT response FROM pairs WHERE sentence = ?', (str(match['id']))).fetchone()[0]
-        
-        return self.cursor.execute('SELECT text FROM sentences WHERE id = ?', (str(response_id))).fetchone()[0]
+        possible_responses = self.cursor.execute('SELECT response FROM pairs WHERE sentence = ?', (str(match['id']))).fetchall()
+        choosen_response = choice(possible_responses)
 
+        return self.cursor.execute('SELECT text FROM sentences WHERE id = ?', (str(choosen_response[0]))) + f' [{match["similarity"]}]'
     
-    def open_session(self):
-        if self.connection:
-            return
-
-        self.connection = sqlite3.connect('AI\database.db')
-        self.cursor = self.connection.cursor()
-    
-    def close_session(self):
-        self.cursor.close()
-        self.connection.close()
-
-        self.cursor = None
-        self.connection = None
+    def update(self, input_text, match, response):
+        pass
