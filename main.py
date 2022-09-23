@@ -1,6 +1,7 @@
 from AI import AI
 
 bot = AI('MAVERICK', '~$')
+last_statement = None
 
 while True:
     text = input('>')
@@ -9,4 +10,6 @@ while True:
         bot.close_session()
         break
 
-    print(bot.talk(text))
+    response = bot.talk(text, last_statement)
+    print(response)
+    last_statement = response
