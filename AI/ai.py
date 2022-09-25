@@ -68,13 +68,14 @@ class AI():
 
         if sentence['similarity'] < ACCEPTABLE_RESEMBLANCE: return
 
-        input_id = None
-        for row in self.cursor.execute('SELECT * FROM sentences').fetchall():
-            if similarity_cosine(input, row[1]) >= ACCEPTABLE_RESEMBLANCE:
-                input_id = row[0]
-                break
-        if not input_id: input_id = self.cursor.execute('INSERT INTO sentences(text) VALUES(?) RETURNING id', (input,)).fetchone()[0]
+        similar_input = self.find(input)
+        if similar_input['similarity'] < ACCEPTABLE_RESEMBLANCE:
+            print('NEW')
+            input_id = self.cursor.execute('INSERT INTO sentences(text) VALUES(?) RETURNING id', (input,)).fetchone()[0]
+        else:
+            input_id = similar_input['id']
 
-        self.cursor.execute('INSERT INTO pairs VALUES(?, ?)', (sentence['id'], input_id))
+        if not self.cursor.execute('SELECT * FROM pairs WHERE sentence = ? AND response = ?', (sentence['id'], input_id)).fetchall():
+            self.cursor.execute('INSERT INTO pairs VALUES(?, ?)', (sentence['id'], input_id))
 
         self.connection.commit()
