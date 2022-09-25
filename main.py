@@ -1,6 +1,6 @@
 from AI import AI
 
-bot = AI('MAVERICK', '~$')
+bot = AI('MAVERICK', '~$', False)
 last_statement = None
 
 while True:
@@ -11,5 +11,7 @@ while True:
         break
 
     response = bot.talk(text, last_statement)
-    print(response)
-    last_statement = response
+
+    if not response == 110:
+        print(response)
+        last_statement = response

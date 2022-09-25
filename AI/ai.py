@@ -5,9 +5,10 @@ import sqlite3
 ACCEPTABLE_RESEMBLANCE = 0.8
 
 class AI():
-    def __init__(self, name, special_char):
+    def __init__(self, name, special_char, commit_changes = True):
         self.name = name
         self.special_char = special_char
+        self.commit_changes = commit_changes
 
         self.connection = None
         self.cursor = None
@@ -37,6 +38,8 @@ class AI():
 
         for row in self.cursor.execute('SELECT * FROM sentences').fetchall():
             aprox = similarity_cosine(input, row[1])
+
+            if aprox == 110: return 110
             
             if aprox > match['similarity']:
                 match['id'] = row[0]
@@ -50,6 +53,8 @@ class AI():
         if not self.connection: self.open_session()
 
         match = self.find(input)
+
+        if match == 110: return match
         
         possible_responses = self.cursor.execute('SELECT response FROM pairs WHERE sentence = ?', (str(match['id']))).fetchall()
         choosen_response = choice(possible_responses)
@@ -62,6 +67,7 @@ class AI():
         return self.cursor.execute('SELECT text FROM sentences WHERE id = ?', (str(choosen_response[0]))).fetchone()[0] + f' [{match["similarity"]}]'
     
     def update(self, response_statement, input):
+        if not self.commit_changes: return
         if not self.connection: self.open_session()
         if not response_statement: return
         sentence = self.find(response_statement)

@@ -1,0 +1,32 @@
+{
+    "char_guide": {
+        "a": ["á", "à", "â", "ã", "ä"],
+        "e": ["é", "è", "ê", "ë"],
+        "i": ["í", "ì", "ï", "î"],
+        "o": ["ó", "ò", "ö", "ô", "õ"],
+        "u": ["ú", "ù", "ü", "û"]
+    },
+
+    "ban_words": [
+        "araçatuba",
+        "hitl",
+        "h1tl",
+        "holocausto",
+        "nazi",
+        "n4zi",
+        "n4z1",
+        "neonazi",
+        "racis",
+        "nig",
+        "viad",
+        "pedo",
+        "estupro",
+        "aborto",
+        "suicidio",
+        "morra",
+        "genocidio",
+        "smt",
+        "incel",
+        "conservadia"
+    ]
+}

@@ -1,16 +1,12 @@
 import math, re
+from json import load
 from collections import Counter
-
 
 WORD = re.compile(r"\w+")
 
-filter_guide = [
-    ('a', 'á à â ã ä'),
-    ('e', 'é è ê ë'),
-    ('i', 'í ì ï î'),
-    ('o', 'ó ò ö ô õ'),
-    ('u', 'ú ù ü û')
-]
+with open('AI\\config.json', 'r', encoding='utf-8') as config_file:
+    config = load(config_file)
+
 
 def generate_vector(text):
     words = WORD.findall(text)
@@ -19,20 +15,26 @@ def generate_vector(text):
 
 def filter(text):
     text = text.lower()
-
-    for i in range(len(filter_guide)):
-        for letter in filter_guide[i][1].split():
-            text = text.replace(letter, filter_guide[i][0])
     
-    #text = ''.join(ch for ch in text if ch.isalnum() or chr == ' ')
+    for key, value in config['char_guide'].items():
+        for letter in value:
+            text = text.replace(letter, key)
+    
+    for word in config['ban_words']:
+        if word in text:
+            return 110
+    
+    text = re.sub(r'[^A-Za-z0-9 ]+', '', text)
 
     return text
 
 
-def similarity_cosine(text1, text2):
+def similarity_cosine(input, response):
+    input, response = filter(input), filter(response)
 
-    text1, text2 = filter(text1), filter(text2)
-    vec1, vec2 = generate_vector(text1), generate_vector(text2)
+    if input == 110: return 110
+
+    vec1, vec2 = generate_vector(input), generate_vector(response)
 
     intersection = set(vec1.keys()) & set(vec2.keys())
     numerator = sum([vec1[x] * vec2[x] for x in intersection])
