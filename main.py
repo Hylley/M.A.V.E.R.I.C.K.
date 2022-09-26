@@ -1,17 +1,49 @@
 from AI import AI
+from os import getenv
+from time import sleep
+from Twitter import Auth
+from dotenv import load_dotenv
 
-MAVERICK = AI('MAVERICK', '~$')
+TWEET_RESPONSE_DELAY = 1
+TWEET_RESEARCH_DELAY = 10
+
+load_dotenv()
+
+Maverick = AI('MAVERICK', '~$', False)
+Twitter = Auth(
+    getenv('API_KEY'),
+    getenv('API_KEY_SECRET'),
+    getenv('ACCESS_TOKEN'),
+    getenv('ACCESS_TOKEN_SECRET')
+)
+
 last_statement = None
 
 while True:
-    text = input('>')
+    timeline = Twitter.new_replies()
 
-    if text == '~$q':
-        MAVERICK.close_session()
-        break
+    if timeline:
+        Maverick.open_session()
 
-    response = MAVERICK.talk(text, last_statement)
+        for tweet in timeline:
+            plast_statement = Twitter.preivous_reply(tweet.id).full_text
 
-    if not response == 110:
-        print(response)
-        last_statement = response
+            print(Maverick.talk(tweet.full_text, last_statement))
+
+            sleep(TWEET_RESPONSE_DELAY)
+        
+        Maverick.close_session()
+    
+    sleep(TWEET_RESEARCH_DELAY)
+
+    # text = input('>')
+
+    # if text == '~$q':
+    #     Maverick.close_session()
+    #     break
+
+    # response = Maverick.talk(text, last_statement)
+
+    # if not response == 110:
+    #     print(response)
+    #     last_statement = response

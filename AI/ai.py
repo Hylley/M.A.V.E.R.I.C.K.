@@ -63,7 +63,7 @@ class AI():
             input
         )
 
-        return self.cursor.execute('SELECT text FROM sentences WHERE id = ?', (str(choosen_response[0]))).fetchone()[0] + f' [{match["similarity"]}] [{updated}]'
+        return self.cursor.execute('SELECT text FROM sentences WHERE id = ?', (str(choosen_response[0]))).fetchone()[0]# + f' [{match["similarity"]}] [{updated}]'
     
     def update(self, response_statement, input):
         if not self.commit_changes: return
