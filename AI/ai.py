@@ -55,7 +55,7 @@ class AI():
         match = self.find(input)
 
         if match == 110: return match
-        possible_responses = self.cursor.execute('SELECT response FROM pairs WHERE sentence = ?', (str(match['id']))).fetchall() or 2
+        possible_responses = self.cursor.execute('SELECT response FROM pairs WHERE sentence = ?', (str(match['id']))).fetchall() or self.cursor.execute('SELECT response FROM pairs ORDER BY RANDOM() LIMIT 1').fetchall()
         choosen_response = choice(possible_responses)
 
         updated = self.update(
@@ -77,7 +77,6 @@ class AI():
 
         similar_input = self.find(input)
         if similar_input['similarity'] < ACCEPTABLE_RESEMBLANCE:
-            print('NEW')
             input_id = self.cursor.execute('INSERT INTO sentences(text) VALUES(?) RETURNING id', (input,)).fetchone()[0]
         else:
             input_id = similar_input['id']
@@ -86,6 +85,6 @@ class AI():
             self.cursor.execute('INSERT INTO pairs VALUES(?, ?)', (sentence['id'], input_id))
             updated = True
 
-        #self.connection.commit()
+        self.connection.commit()
 
         return updated
