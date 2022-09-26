@@ -14,10 +14,20 @@ class Auth:
         )
 
         self.api = tweepy.API(auth)
-        self.load_data()
+        self.LoadData()
     
-    def new_replies(self):
-        self.load_data()
+    def LoadData(self):
+        with open('Twitter\data.json', 'r') as data_file:
+            self.data = load(data_file)
+        
+            return self.data
+
+    def UpdateData(self):
+        with open('Twitter\data.json', 'w') as data_file:
+            dump(self.data, data_file, indent=4)
+    
+    def MentionsTimeline(self):
+        self.LoadData()
 
         replies = self.api.mentions_timeline(
             since_id = self.data['last_registered_reply_id'],
@@ -28,11 +38,11 @@ class Auth:
 
         self.data['last_registered_reply_id'] = replies[0].id
 
-        self.update_data()
+        self.UpdateData()
 
         return replies
 
-    def preivous_reply(self, id):
+    def SearchForPreviousTweet(self, id):
         status = self.api.get_status(id)
         
         if not status: return None
@@ -43,16 +53,14 @@ class Auth:
 
         return previous
 
-    def load_data(self):
-        with open('Twitter\data.json', 'r') as data_file:
-            self.data = load(data_file)
-        
-            return self.data
+    def Reply(self, text, tweet_id):
+        self.api.update_status(
+            status = text,
+            in_reply_to_status_id = tweet_id,
+            auto_populate_reply_metadata = True
+        )
 
-    def update_data(self):
-        with open('Twitter\data.json', 'w') as data_file:
-            dump(self.data, data_file, indent=4)
-
+        print(f'MAV: {text}')
 
 
 # def twitterAuthenticate():

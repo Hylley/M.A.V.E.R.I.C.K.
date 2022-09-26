@@ -1,8 +1,9 @@
-from AI import AI
 from os import getenv
 from time import sleep
-from Twitter import Auth
 from dotenv import load_dotenv
+
+from AI import AI
+from Twitter import Auth, MentionLinkFilter
 
 TWEET_RESPONSE_DELAY = 1
 TWEET_RESEARCH_DELAY = 10
@@ -20,19 +21,25 @@ Twitter = Auth(
 last_statement = None
 
 while True:
-    timeline = Twitter.new_replies()
+    mentions = Twitter.MentionsTimeline()
 
-    if timeline:
-        Maverick.open_session()
+    if mentions:
+        Maverick.OpenSession()
 
-        for tweet in timeline:
-            plast_statement = Twitter.preivous_reply(tweet.id).full_text
+        for tweet in mentions:
+            previous_tweet = Twitter.SearchForPreviousTweet(tweet.id)
 
-            print(Maverick.talk(tweet.full_text, last_statement))
+            Twitter.Reply(
+                Maverick.Talk(
+                    MentionLinkFilter(tweet.full_text),
+                    MentionLinkFilter(previous_tweet.full_text)
+                ),
+                tweet.id
+            )
 
             sleep(TWEET_RESPONSE_DELAY)
         
-        Maverick.close_session()
+        Maverick.CloseSession()
     
     sleep(TWEET_RESEARCH_DELAY)
 

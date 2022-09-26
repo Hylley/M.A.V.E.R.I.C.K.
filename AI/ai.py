@@ -13,23 +13,23 @@ class AI():
         self.connection = None
         self.cursor = None
 
-        self.open_session()
+        self.OpenSession()
     
-    def open_session(self):
+    def OpenSession(self):
         if self.connection:
             return
 
         self.connection = sqlite3.connect('AI\database.db')
         self.cursor = self.connection.cursor()
     
-    def close_session(self):
+    def CloseSession(self):
         self.cursor.close()
         self.connection.close()
 
         self.cursor = None
         self.connection = None
     
-    def find(self, input):
+    def Find(self, input):
         match = {
             'id': 1,
             'text': '',
@@ -48,34 +48,34 @@ class AI():
         
         return match
 
-    def talk(self, input, response_statement):
+    def Talk(self, input, response_statement):
         if self.special_char in input: return False
-        if not self.connection: self.open_session()
+        if not self.connection: self.OpenSession()
 
-        match = self.find(input)
+        match = self.Find(input)
 
         if match == 110: return match
         possible_responses = self.cursor.execute('SELECT response FROM pairs WHERE sentence = ?', (str(match['id']))).fetchall() or self.cursor.execute('SELECT response FROM pairs ORDER BY RANDOM() LIMIT 1').fetchall()
         choosen_response = choice(possible_responses)
 
-        updated = self.update(
+        Updated = self.Update(
             response_statement,
             input
         )
 
-        return self.cursor.execute('SELECT text FROM sentences WHERE id = ?', (str(choosen_response[0]))).fetchone()[0]# + f' [{match["similarity"]}] [{updated}]'
+        return self.cursor.execute('SELECT text FROM sentences WHERE id = ?', (str(choosen_response[0]))).fetchone()[0]# + f' [{match["similarity"]}] [{Updated}]'
     
-    def update(self, response_statement, input):
+    def Update(self, response_statement, input):
         if not self.commit_changes: return
-        if not self.connection: self.open_session()
+        if not self.connection: self.OpenSession()
         if not response_statement: return
 
-        updated = False
-        sentence = self.find(response_statement)
+        Updated = False
+        sentence = self.Find(response_statement)
 
         if sentence['similarity'] < ACCEPTABLE_RESEMBLANCE: return
 
-        similar_input = self.find(input)
+        similar_input = self.Find(input)
         if similar_input['similarity'] < ACCEPTABLE_RESEMBLANCE:
             input_id = self.cursor.execute('INSERT INTO sentences(text) VALUES(?) RETURNING id', (input,)).fetchone()[0]
         else:
@@ -83,8 +83,8 @@ class AI():
 
         if not self.cursor.execute('SELECT * FROM pairs WHERE sentence = ? AND response = ?', (sentence['id'], input_id)).fetchall():
             self.cursor.execute('INSERT INTO pairs VALUES(?, ?)', (sentence['id'], input_id))
-            updated = True
+            Updated = True
 
         self.connection.commit()
 
-        return updated
+        return Updated
