@@ -29,15 +29,18 @@ while True:
         for tweet in mentions:
             previous_tweet = Twitter.SearchForPreviousTweet(tweet.id)
 
-            Twitter.Reply(
-                Maverick.Talk(
-                    MentionLinkFilter(tweet.full_text),
-                    MentionLinkFilter(previous_tweet.full_text)
-                ),
-                tweet.id
+            response = Maverick.Talk(
+                MentionLinkFilter(tweet.full_text),
+                MentionLinkFilter(previous_tweet.full_text)
             )
 
-            sleep(TWEET_RESPONSE_DELAY)
+            if not response == 110:
+                Twitter.Reply(
+                    response,
+                    tweet.id
+                )
+
+                sleep(TWEET_RESPONSE_DELAY)
         
         Maverick.CloseSession()
     
