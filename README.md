@@ -1,6 +1,6 @@
 # M.A.V.E.R.I.C.K.
 
-Maverick (or simply Mav) is a machine-learning conversational artificial intelligence build in Python, wich make it's responses based on collections of known conversations. Made entirelly for interacting on Twitter ([@Maverick5000](https://twitter.com/Maverick5000)).
+Maverick (or simply Mavy) is a machine-learning conversational artificial intelligence build in Python, wich make it's responses based on collections of known conversations. Made entirelly for interacting on Twitter ([@Maverick5000](https://twitter.com/Maverick5000)).
 
 ## 🔧 Installing
 You can clone this repo via:
@@ -49,19 +49,19 @@ In a nutshell, when an user types a statment, the bot always searches its databa
 GenerateVector("This is a cool sentence.")
 
 # outputs: {
-  'This': 1,
-  'is': 1,
-  'a': 1,
-  'cool': 1,
-  'sentence': 1
+  "This": 1,
+  "is": 1,
+  "a": 1,
+  "cool": 1,
+  "sentence": 1
 }
 ```
 
 After that, it uses **[cosine similarity](https://en.wikipedia.org/wiki/Cosine_similarity)** to measure the similarity between these vectors. For example:
 ```
 SimilarityCosine(
- "This is a sentence.",
- "This is a similar sentence."
+  "This is a sentence.",
+  "This is a similar sentence."
 )
 
 # outputs 0.9
@@ -69,8 +69,8 @@ SimilarityCosine(
 While:
 ```
 SimilarityCosine(
- "This is a sentence.",
- "That's a different statement."
+  "This is a sentence.",
+  "That's a different statement."
 )
 
 # outputs 0.2
