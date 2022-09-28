@@ -58,19 +58,19 @@ class AI():
         possible_responses = self.cursor.execute('SELECT response FROM pairs WHERE sentence = ?', (str(match['id']),)).fetchall() or self.cursor.execute('SELECT response FROM pairs ORDER BY RANDOM() LIMIT 1').fetchall()
         choosen_response = choice(possible_responses)
 
-        Updated = self.Update(
+        updated = self.Update(
             response_statement,
             input
         )
 
         return self.cursor.execute('SELECT text FROM sentences WHERE id = ?', (str(choosen_response[0]),)).fetchone()[0]# + f' [{match["similarity"]}] [{Updated}]'
-    
+
     def Update(self, response_statement, input):
         if not self.commit_changes: return
         if not self.connection: self.OpenSession()
         if not response_statement: return
 
-        Updated = False
+        updated = False
         sentence = self.Find(response_statement)
 
         if sentence['similarity'] < ACCEPTABLE_RESEMBLANCE: return
@@ -83,8 +83,8 @@ class AI():
 
         if not self.cursor.execute('SELECT * FROM pairs WHERE sentence = ? AND response = ?', (sentence['id'], input_id)).fetchall():
             self.cursor.execute('INSERT INTO pairs VALUES(?, ?)', (sentence['id'], input_id))
-            Updated = True
+            updated = True
 
         self.connection.commit()
 
-        return Updated
+        return updated

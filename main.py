@@ -5,12 +5,12 @@ from dotenv import load_dotenv
 from AI import AI
 from Twitter import Auth, MentionLinkFilter
 
-TWEET_RESPONSE_DELAY = 1
-TWEET_RESEARCH_DELAY = 10
+TWEET_RESPONSE_DELAY = 2
+TWEET_RESEARCH_DELAY = 60
 
 load_dotenv()
 
-Maverick = AI('MAVERICK', '~$', False)
+Maverick = AI('MAVERICK', '~$', True)
 Twitter = Auth(
     getenv('API_KEY'),
     getenv('API_KEY_SECRET'),
@@ -34,11 +34,14 @@ while True:
                 MentionLinkFilter(previous_tweet.full_text)
             )
 
-            if not response == 110:
-                Twitter.Reply(
-                    response,
-                    tweet.id
-                )
+            if response and not response == 110:
+                try:
+                    Twitter.Reply(
+                        response,
+                        tweet.id
+                    )
+                except Exception as error:
+                    print(error)
 
                 sleep(TWEET_RESPONSE_DELAY)
         
