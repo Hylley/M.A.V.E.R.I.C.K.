@@ -55,7 +55,7 @@ class AI():
         match = self.Find(input)
 
         if match == 110: return match
-        possible_responses = self.cursor.execute('SELECT response FROM pairs WHERE sentence = ?', (str(match['id']))).fetchall() or self.cursor.execute('SELECT response FROM pairs ORDER BY RANDOM() LIMIT 1').fetchall()
+        possible_responses = self.cursor.execute('SELECT response FROM pairs WHERE sentence = ?', (str(match['id']),)).fetchall() or self.cursor.execute('SELECT response FROM pairs ORDER BY RANDOM() LIMIT 1').fetchall()
         choosen_response = choice(possible_responses)
 
         Updated = self.Update(
@@ -63,7 +63,7 @@ class AI():
             input
         )
 
-        return self.cursor.execute('SELECT text FROM sentences WHERE id = ?', (str(choosen_response[0]))).fetchone()[0]# + f' [{match["similarity"]}] [{Updated}]'
+        return self.cursor.execute('SELECT text FROM sentences WHERE id = ?', (str(choosen_response[0]),)).fetchone()[0]# + f' [{match["similarity"]}] [{Updated}]'
     
     def Update(self, response_statement, input):
         if not self.commit_changes: return
